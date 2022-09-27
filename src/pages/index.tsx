@@ -3,21 +3,16 @@ import Head from 'next/head'
 import { trpc } from '../utils/trpc'
 import { atom, useAtom } from 'jotai'
 
-// import { useAtom } from 'jotai/core/useAtom'
 const textAtom = atom('text in the atom')
 
 const Home: NextPage = () => {
   const echo = trpc.mytrpc.echo.useQuery({ text: 'Hi there' })
+  const myAction = trpc.mytrpc.myTest.useMutation({
+    onSuccess: (input) => {
+      setText('Enter: ' + input)
+    },
+  })
   const [text, setText] = useAtom(textAtom)
-
-  function handleRun() {
-    // console.log('event-: ', e)
-    // console.log('all are: ', getRun)
-  }
-
-  function handleTest(e: any) {
-    // console.log('event-: ', e)
-  }
 
   return (
     <>
@@ -27,7 +22,12 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="container flex flex-col items-center justify-center min-h-screen p-4 mx-auto">
-        <button className="btn" onClick={handleRun}>
+        <button
+          className="btn"
+          onClick={(e) => {
+            //todo: add run
+          }}
+        >
           Run
         </button>
         <div className="py-6 text-2xl text-indigo-500 flex justify-center items-center w-full">
@@ -38,12 +38,22 @@ const Home: NextPage = () => {
             className="w-full p-4 pr-12 text-sm border border-indigo-200 rounded shadow-sm"
             placeholder="Enter text"
             onChange={(e) => {
-              setText(e.target.value)
+              setText(e.currentTarget.value)
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                myAction.mutate({ text: e.currentTarget.value })
+              }
             }}
           />
           <div className="pb-4" />
 
-          <button className="btn" onClick={handleTest}>
+          <button
+            className="btn"
+            onClick={(e) => {
+              //todo: add test
+            }}
+          >
             Test
           </button>
         </section>
